@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="ooxml-lib">
+    <CLASSES>
+      <root url="file://$USER_HOME$/Desktop/xlsxjar/xlsxjar/ooxml-lib" />
+      <root url="file://$USER_HOME$/Desktop/xlsxjar/xlsxjar/lib" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file://$USER_HOME$/Desktop/xlsxjar/xlsxjar/lib" recursive="false" />
+    <jarDirectory url="file://$USER_HOME$/Desktop/xlsxjar/xlsxjar/ooxml-lib" recursive="false" />
+  </library>
+</component>
