@@ -7,6 +7,8 @@ import exceptions.EmptyListException;
  */
 public interface BinaryTreeInterface<E> {
 
+    enum TraversalOrder{INORDER, PREORDER, POSTORDER}
+
     /**
      * Adds passed element to the correct place given the order
      * of the list.
@@ -16,10 +18,10 @@ public interface BinaryTreeInterface<E> {
     void add(E element);
 
     /**Removes the first occurrence of the specified element from the list.
-     * Returns true if an element was removes.  Otherwise, returns false.
+     * Returns the element that was removed, or returns null if the element was not found.
      * @param element
      */
-    boolean remove(E element);
+    E remove(E element);
 
     /**Searches the list to see whether or not an occurrence of the given element
      * already exists.
@@ -37,17 +39,23 @@ public interface BinaryTreeInterface<E> {
     E get(E element) throws EmptyListException;
 
 
-    /**Returns the next element in the list and then updates the current position.
+    /**
+     * Accepts the TraversalOrder enumeration values INORDER, PREORDER, or POSTORDER.
+     * Returns the next element in the corresponding list.
+     *
+     * Pre Condition: Must have used the reset method of the corresponding enumeration
+     * prior to using this method.
      *
      * @return  The next element in the list
      */
-    E getNext();
+    E getNext(TraversalOrder order);
 
-    /**Sets the current position (the position of the next element to be processed)
-     * to the first element on the list.
+    /**Accepts the TraversalOrder enumeration values INORDER, PREORDER, or POSTORDER.
+     * Initializes the structure used to store the traversal of the given enumeration.
+     * Returns the number of elements in the binary search tree.
      *
      */
-    void reset();
+    int reset(TraversalOrder order);
 
     /**Returns the size of our list.
      *

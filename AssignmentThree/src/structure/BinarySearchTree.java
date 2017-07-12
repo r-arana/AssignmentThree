@@ -4,25 +4,34 @@ import exceptions.EmptyListException;
 import interfaces.BinaryTreeInterface;
 import structures.BoundedQueue;
 
-import java.util.Iterator;
+import java.util.Comparator;
+
+import static interfaces.BinaryTreeInterface.TraversalOrder.INORDER;
+import static interfaces.BinaryTreeInterface.TraversalOrder.POSTORDER;
+import static interfaces.BinaryTreeInterface.TraversalOrder.PREORDER;
+
 
 /**
  * Created by REA on 7/2/2017.
  */
-public class BinarySearchTree<E extends Comparable<E>> implements BinaryTreeInterface<E> {
+public class BinarySearchTree<E extends Comparable<E>> implements BinaryTreeInterface<E>{
 
     private Node<E> tree = null;
+    private Node<E> tempTree = null;
     private boolean found = false;
     private int numberOfElements = 0;
-    private static final int QSIZE = 200;
 
-    enum TraversalOrder{INORDER, PREORDER, POSTORDER}
+    private BoundedQueue<E> inOrderQueue;
+    private BoundedQueue<E> preOrderQueue;
+    private BoundedQueue<E> postOrderQueue;
 
-    Iterator<E> treeIterator;
+    private E[] sortedArray;
+
+
+    //private Iterator<E> treeIterator;
 
     /**
-     * Throws an exception when duplicate elements are found.
-     * Otherwise, adds passed element to the correct place given the order
+     * Adds passed element to the correct place given the order
      * of the list.
      *
      * @param element
@@ -50,17 +59,24 @@ public class BinarySearchTree<E extends Comparable<E>> implements BinaryTreeInte
 
     /**
      * Removes the first occurrence of the specified element from the list.
-     * Returns true if an element was removes.  Otherwise, returns false.
+     * Returns the element that was removed, or returns null if the element was not found.
      *
      * @param element
      */
     @Override
-    public boolean remove(E element) {
-        tree = recursiveRemove(element, tree);
+    public E remove(E element) throws EmptyListException {
+        if (isEmpty()){
+            throw new EmptyListException("Attempted to use remove() on an empty list.");
+        }
+        else {
+            tree = recursiveRemove(element, tree);
+        }
+
         if (found){
             numberOfElements--;
+            return element;
         }
-        return found;
+        return null;
     }
 
     /* Our recursive remove starts in a similar way to our add method.
@@ -171,7 +187,12 @@ public class BinarySearchTree<E extends Comparable<E>> implements BinaryTreeInte
     @Override
     public E get(E element) throws EmptyListException {
 
-        return recursiveGet(element, tree);
+        if (isEmpty()){
+            throw new EmptyListException("Attempted to use get() on an empty list.");
+        }
+        else{
+            return recursiveGet(element, tree);
+        }
     }
 
     private E recursiveGet(E element, Node<E> root){
@@ -195,14 +216,17 @@ public class BinarySearchTree<E extends Comparable<E>> implements BinaryTreeInte
     }
 
     /**
-     * Returns the next element in the list and then updates the current position.
+     * Accepts the TraversalOrder enumeration values INORDER, PREORDER, or POSTORDER.
+     * Returns the next element in the corresponding list.
      *
-     * PreCondition: Must reset before using getNext() for the first time.
+     * Pre Condition: Must have used the reset method of the corresponding enumeration
+     * prior to using this method.
      *
-     * @return The next element in the list
+     * @return  The next element in the list
      */
     @Override
-    public E getNext() {
+    public E getNext(TraversalOrder order) {
+        /*
         // If our iterator is empty, return null.
         if (!treeIterator.hasNext()){
             return null;
@@ -211,19 +235,62 @@ public class BinarySearchTree<E extends Comparable<E>> implements BinaryTreeInte
         else{
             return treeIterator.next();
         }
+        */
+        switch (order){
+            case INORDER:
+                if (inOrderQueue.isEmpty()){
+                    throw new IndexOutOfBoundsException("You attempted to use getNext when there were no more elements.");
+                }
+                else {
+                    return inOrderQueue.dequeue();
+                }
 
+            case PREORDER:
+                if (preOrderQueue.isEmpty()){
+                    throw new IndexOutOfBoundsException("You attempted to use getNext when there were no more elements.");
+                }
+                else {
+                    return preOrderQueue.dequeue();
+                }
+            case POSTORDER:
+                if (postOrderQueue.isEmpty()){
+                    throw new IndexOutOfBoundsException("You attempted to use getNext when there were no more elements.");
+                }
+                else {
+                    return postOrderQueue.dequeue();
+                }
+        }
 
+        return null;
     }
 
     /**
-     * Gives us a new iterator to traverse the most recent snapshot of our tree.
+     * Accepts the TraversalOrder enumeration values INORDER, PREORDER, or POSTORDER.
+     * Initializes the structure used to store the traversal of the given enumeration.
+     * Returns the number of elements in the binary search tree.
      */
     @Override
-    public void reset() {
-        treeIterator = getIterator(TraversalOrder.INORDER);
+    public int reset(TraversalOrder order) {
+
+        switch (order){
+            case INORDER:
+                inOrderQueue = new BoundedQueue<>(size());
+                inOrder(tree);
+                break;
+
+            case PREORDER:
+                preOrderQueue = new BoundedQueue<>(size());
+                preOrder(tree);
+                break;
+
+            case POSTORDER:
+                postOrderQueue = new BoundedQueue<>(size());
+                postOrder(tree);
+                break;
+        }
+
+        return size();
     }
-
-
 
     /**
      * Returns the size of our list.
@@ -247,85 +314,85 @@ public class BinarySearchTree<E extends Comparable<E>> implements BinaryTreeInte
 
     @Override
     public String toString(){
-        reset();
-        String fullString = "";
+        reset(INORDER);
+        reset(PREORDER);
+        reset(POSTORDER);
 
-        if (!treeIterator.hasNext()){
-            System.out.println("Tried to print an empty binary search tree");
+        String fullStringInOrder = "In Order:\n";
+        String fullStringPreOrder = "Pre Order:\n";
+        String fullStringPostOrder = "Post Order\n";
+
+        if (inOrderQueue.isEmpty()){
+            return "Tried to print an empty binary search tree.";
         }
         else{
-            while (treeIterator.hasNext()){
-                fullString += treeIterator.next();
+            while (!inOrderQueue.isEmpty()){
+                fullStringInOrder += inOrderQueue.dequeue();
+                fullStringPreOrder += preOrderQueue.dequeue();
+                fullStringPostOrder += postOrderQueue.dequeue();
             }
         }
-        return fullString;
+
+
+        return fullStringInOrder + "\n" + fullStringPreOrder + "\n" + fullStringPostOrder;
     }
 
-    /* There's technically no need to use an interator according to our assignment requirements, but I wanted to
-       practice using the iterators in the book and using anonymous inner classes.
-       This comes from Chapter 7.6 pages 452-455 of the book.
-     */
-
-    private Iterator<E> getIterator(TraversalOrder orderType){
-        final BoundedQueue<E> infoQueue = new BoundedQueue<>(QSIZE);
-
-        if (orderType == TraversalOrder.PREORDER){
-            preOrder(tree, infoQueue);
-        }
-        else if (orderType == TraversalOrder.INORDER){
-            inOrder(tree, infoQueue);
-        }
-        else if (orderType == TraversalOrder.POSTORDER){
-            postOrder(tree, infoQueue);
-        }
-        // As we create the Iterator that we want to return, we also create a class to override the methods iterator
-        // comes with.
-        return new Iterator<E>() {
-            @Override
-            public boolean hasNext() {
-                return !infoQueue.isEmpty();
-            }
-
-            @Override
-            public E next() {
-                if (!hasNext()){
-                    throw new IndexOutOfBoundsException("Illegal invocation of next in the iterator.");
-                }
-                return infoQueue.dequeue();
-            }
-
-            @Override
-            public void remove(){
-                throw new UnsupportedOperationException("Remove is not supported through the iterator in our binary list.");
-            }
-        };
-    }
-
-    private void inOrder(Node<E> node, BoundedQueue<E> queue){
+    private void inOrder(Node<E> node){
         if (node != null){
-            inOrder(node.getLeftLink(), queue);
-            queue.enqueue(node.getElement());
-            inOrder(node.getRightLink(), queue);
+            inOrder(node.getLeftLink());
+            inOrderQueue.enqueue(node.getElement());
+            inOrder(node.getRightLink());
         }
     }
 
-    private void preOrder(Node<E> node, BoundedQueue<E> queue){
+    private void preOrder(Node<E> node){
         if (node != null){
-            queue.enqueue(node.getElement());
-            preOrder(node.getLeftLink(), queue);
-            preOrder(node.getRightLink(), queue);
+            preOrderQueue.enqueue(node.getElement());
+            preOrder(node.getLeftLink());
+            preOrder(node.getRightLink());
         }
     }
 
-    private void postOrder(Node<E> node, BoundedQueue<E> queue){
+    private void postOrder(Node<E> node){
         if (node != null){
-            postOrder(node.getLeftLink(), queue);
-            postOrder(node.getRightLink(), queue);
-            queue.enqueue(node.getElement());
+            postOrder(node.getLeftLink());
+            postOrder(node.getRightLink());
+            postOrderQueue.enqueue(node.getElement());
         }
     }
 
+    // Balance our binary search tree to take advantage of fast search times.
+    public void balanceTree(){
+        reset(INORDER);
+        // Look up the interaction between bounded generics and their initialization
+        // https://stackoverflow.com/questions/34827626/cannot-be-cast-to-ljava-lang-comparable
+        // https://stackoverflow.com/questions/18292282/java-lang-classcastexception-ljava-lang-comparable-cannot-be-cast-to
+        sortedArray = (E[]) new Comparable[size()];
 
+        for (int i = 0; i < sortedArray.length; i++){
+            sortedArray[i] = inOrderQueue.dequeue();
+        }
+
+        recBalanceTree(0, sortedArray.length - 1);
+        tree = tempTree;
+    }
+
+
+    private void recBalanceTree(int lowerBound, int upperBound){
+        if(lowerBound + 1 == upperBound){
+            tempTree = recursiveAdd(sortedArray[lowerBound], tempTree);
+            tempTree = recursiveAdd(sortedArray[upperBound], tempTree);
+        }
+        else if(lowerBound == upperBound){
+            tempTree = recursiveAdd(sortedArray[lowerBound], tempTree);
+        }
+        else{
+            int midpoint = (lowerBound + upperBound) / 2;
+            tempTree = recursiveAdd(sortedArray[midpoint], tempTree);
+            recBalanceTree(lowerBound, midpoint - 1);
+            recBalanceTree(midpoint + 1, upperBound);
+        }
+    }
 
 
 }

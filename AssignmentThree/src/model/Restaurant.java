@@ -1,8 +1,10 @@
 package model;
 
 import javafx.beans.property.SimpleStringProperty;
+import org.junit.Test;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 /**
  * Created by REA on 7/2/2017.
@@ -10,6 +12,7 @@ import java.io.Serializable;
  * This was redone using the formatting advice from http://docs.oracle.com/javafx/2/fxml_get_started/fxml_tutorial_intermediate.htm
  * to use the SimpleStringProperty instead of String
  */
+
 public class Restaurant implements Comparable<Restaurant>, Serializable{
 
     private SimpleStringProperty name;
@@ -58,6 +61,7 @@ public class Restaurant implements Comparable<Restaurant>, Serializable{
         this.phoneNumber = new SimpleStringProperty("");
         this.photo = new SimpleStringProperty("");
     }
+
 
     public String getName() {
         return name.get();
@@ -194,9 +198,33 @@ public class Restaurant implements Comparable<Restaurant>, Serializable{
 
     @Override
     public int compareTo(Restaurant o) {
-        int compare = this.latitude.get().compareTo(o.getLatitude());
+        int compare = this.getLatitude().compareTo(o.getLatitude());
         // If our latitude values are equivalent then we move on to comparing the longitude of
         // our coordinates.  Otherwise, we can just return our initial comparison.
         return (compare == 0) ? this.longitude.get().compareTo(o.getLongitude()) : compare;
+    }
+
+    // Compares the name of this restaurant with the given restaurant.
+    // This comparison will ignore symbols/punctuation.
+    // https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#usc
+    public int compareNames(Restaurant o) {
+        String restaurant1 = this.getName().replaceAll("[^\\p{IsLatin}]", "");
+        //String restaurant1 = this.getName().replaceAll("[\\W[^\\p{L}]]", "");
+        String restaurant2 = o.getName().replaceAll("[^\\p{IsLatin}]", "");
+
+        //System.out.println("Restaurant 1: " + restaurant1);
+        //System.out.println("Restaurant 2: " + restaurant2);
+
+        return restaurant1.compareToIgnoreCase(restaurant2);
+        //return this.getName().compareToIgnoreCase(o.getName());
+    }
+
+    // Compares the name of this restaurant with the given restaurant.
+    // This comparison will ignore symbols, punctuation, and spacing.
+    public int comparePhoneNumbers(Restaurant o){
+        String restaurant1 = this.getPhoneNumber().replaceAll("\\W", "");
+        String restaurant2 = o.getPhoneNumber().replaceAll("\\W", "");
+
+        return restaurant1.compareTo(restaurant2);
     }
 }

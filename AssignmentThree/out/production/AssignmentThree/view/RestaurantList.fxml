@@ -12,8 +12,8 @@
   <items>
     <AnchorPane minHeight="50.0" minWidth="0.0" prefHeight="201.0" prefWidth="1089.0">
          <children>
-            <TextField fx:id="searchBar" layoutX="32.0" layoutY="42.0" onAction="#handleEnterPressed" prefHeight="42.0" prefWidth="919.0" promptText="Latitude, Longitude" />
-            <Label fx:id="errorLabel" layoutX="32.0" layoutY="91.0" prefHeight="21.0" prefWidth="543.0" text="Please type the latitude and longitude in the correct format:   Latitude, Longitude" textFill="RED" visible="false" />
+            <TextField fx:id="searchBar" layoutX="32.0" layoutY="42.0" onAction="#handleEnterPressed" prefHeight="42.0" prefWidth="919.0" promptText="Enter the restaurant's name, phone number, or coordinates." />
+            <Label fx:id="errorLabel" layoutX="32.0" layoutY="91.0" prefHeight="21.0" prefWidth="543.0" text="Invalid Input" textFill="RED" visible="false" />
             <Label fx:id="noMatchesLabel" layoutX="32.0" layoutY="91.0" prefHeight="21.0" prefWidth="137.0" text="No matches found." textFill="RED" visible="false" />
             <Button fx:id="resetButton" layoutX="977.0" layoutY="48.0" mnemonicParsing="false" onAction="#resetButtonPressed" text="Reset" />
          </children></AnchorPane>

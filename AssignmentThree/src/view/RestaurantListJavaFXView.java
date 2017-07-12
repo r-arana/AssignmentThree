@@ -3,10 +3,14 @@ package view;
 import controller.RestaurantListController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TableRow;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
@@ -40,14 +44,15 @@ public class RestaurantListJavaFXView {
 
     private static Stage restaurantListStage = new Stage();
     private BorderPane rootLayout;
+    RestaurantListController controller;
 
     public RestaurantListJavaFXView() throws IOException {
 
         loadExcelFile();
         initRootLayout();
         showRestaurantView();
-
         restaurantListStage.setTitle("Restaurant List Page");
+
         /*
         Stage createLoggedInStage = new Stage();
         Parent root = FXMLLoader.load(getClass().getResource("RestaurantList.fxml"));
@@ -83,7 +88,7 @@ public class RestaurantListJavaFXView {
             rootLayout.setCenter(restaurantOverview);
 
             // Pass the controller access to this application
-            RestaurantListController controller = loader.getController();
+            controller = loader.getController();
             controller.setRestaurantApp(this);
             controller.initialize();
         }
@@ -119,6 +124,8 @@ public class RestaurantListJavaFXView {
             restaurantTree.add(restaurant);
             restaurantData.add(restaurant);
         }
+        // Balance our binary search tree
+        restaurantTree.balanceTree();
     }
 
 

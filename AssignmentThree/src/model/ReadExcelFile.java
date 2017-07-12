@@ -6,6 +6,7 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import structure.BinarySearchTree;
 
 import java.io.FileInputStream;
@@ -36,6 +37,10 @@ public class ReadExcelFile {
             // Grab the first sheet in the workbook
             XSSFSheet sheet = workbook.getSheetAt(0);
 
+            //https://poi.apache.org/apidocs/org/apache/poi/ss/usermodel/DataFormatter.html
+            //https://stackoverflow.com/questions/30125465/cannot-get-a-text-value-from-a-numeric-cell-poi
+            DataFormatter formatter = new DataFormatter();
+
             Iterator rows = sheet.rowIterator();
             while (rows.hasNext()){
                 XSSFRow row = (XSSFRow) rows.next();
@@ -45,7 +50,7 @@ public class ReadExcelFile {
                 while (cells.hasNext()){
                     XSSFCell cell = (XSSFCell) cells.next();
 
-                    data.add(cell);
+                    data.add(formatter.formatCellValue(cell));
                 }
 
                 sheetData.add(data);

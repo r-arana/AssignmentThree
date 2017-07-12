@@ -107,7 +107,7 @@ public class RegistrationController {
         System.out.println(UserDB.getUsers());
     }
 
-    /** I'm sure there are better ways, but this allows me to use backButton's methods to
+    /* I'm sure there are better ways, but this allows me to use backButton's methods to
      *  get the stage I'm on, and that should allow me to close it with the stage.close() method.
      */
     public void closeRegistration(){
@@ -120,7 +120,7 @@ public class RegistrationController {
         boolean isVerified = true;
         this.makeErrorsInvisible();
 
-        /** This might be a little hard to read, but the idea is simple.
+        /* This might be a little hard to read, but the idea is simple.
          *  We start with the assumption that our registration is verified.
          *  After that, we check if any part is !(not) ok.
          *  It only takes one error to change isVerified to false, and
